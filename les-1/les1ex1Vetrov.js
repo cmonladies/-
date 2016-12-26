@@ -99,7 +99,7 @@ found.movePokemon('petr',lost);
 
 Pokemon.prototype.valueOf = function() { return this.level; };
 PokemonList.prototype.max = function() {
-  let maxLevel = Math.max(null,...this);
+  let maxLevel = Math.max(...this);
   return this.find((element) => (element == maxLevel));
 };
 console.log(lost.max());
