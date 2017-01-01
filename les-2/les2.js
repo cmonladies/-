@@ -1,4 +1,5 @@
-const hide = require('./hidenseek');
+//const hide = require('./hidenseek');
+const hide = require('./hidenseekPromise.js');
 const poklist = require('./poklist');
 const PokemonList = require('./pokemonListClass.js');
 
@@ -8,5 +9,5 @@ poklist.forEach(function (pok,i,arr) {
   pokemonList.add(pok.name,pok.level);
 });
 
-pokemonList.show();
+
 console.log(hide('./data',pokemonList),'!!!!');

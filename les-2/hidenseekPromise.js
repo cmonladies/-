@@ -51,25 +51,39 @@ const setLocalPathes = path => {
 };
 
 
-const createSecretFiles = (linkFolderPokemon,path,i) => {
+var createSecretFilesPromise = function (pathesArray,linkFolderPokemon,path) {
 
-  //let curentFolderNumberArray = path.split("/");
-  //curentFolderNumber = curentFolderNumberArray[curentFolderNumberArray.length-1];
+  return new Promise((resolve, reject) => {
+    pathesArray.forEach(function (path,i,arr){
+      fs.mkdir(path, err => {
+        if(err) return reject(err);
+        console.log(`Папка ${path} создана!`);
 
-  linkFolderPokemon.forEach(function(pokemon,n,arr) {
-    //if (pokemon.folder == curentFolderNumber) {
-      if (pokemon.folder == i) {
-      let message = pokemon.pok.name + '|' + pokemon.pok.level;
-
-      fs.writeFile(path +'/pokemon.txt', message, opts, err => {
-        if (err) throw err;
-        console.log('Файл создан!');
-        hiddenPokListForReturn.push(pokemon.pok);
+        linkFolderPokemon.forEach(function(pokemon) {
+          if (pokemon.folder == i+1) {
+            let message = pokemon.pok.name + '|' + pokemon.pok.level;
+            fs.writeFile(path +'/pokemon.txt', message, opts, err => {
+              if(err) return reject(err);
+              console.log('Файл создан!');
+              hiddenPokListForReturn.push(pokemon.pok);
+              resolve();
+            });
+          };
+        });
       });
-    };
+    });
   });
 };
 
+var createHeadFolderPromise = function (path) {
+  return new Promise((resolve, reject) => {
+    fs.mkdir(path, err => {
+    if (err) return reject(err);
+    console.log(`Папка ${path} создана!`);
+    resolve();
+    });
+  });
+};
 
 
 const hide = (path,pokemonList) => {
@@ -78,24 +92,18 @@ const hide = (path,pokemonList) => {
   let linkFolderPokemon = getLinkFolderPokemon(poksForHide);
   let pathesArray = setLocalPathes(path);
 
-  fs.mkdir(path, err => {
-    if (err) throw err;
-    console.log(`Папка ${path} создана!`);
-
-    pathesArray.forEach(function (path,i,arr){
-      fs.mkdir(path, err => {
-        if (err) throw err;
-        console.log(`Папка ${path} создана!`);
-        createSecretFiles(linkFolderPokemon, path, i+1);
-      });
-    });
-  });
-return poksForHide;
+  createHeadFolderPromise(path)
+  .then(() => createSecretFilesPromise(pathesArray,linkFolderPokemon, path))
+  .then(() => {console.log(hiddenPokListForReturn)})
+  .then(() => {return hiddenPokListForReturn})
+  .catch( err => console.log(err));
 };
 
 
 
-const seek = (path,pokemonList) => {
+const seek = (path) => {
+
+
 
 };
 
