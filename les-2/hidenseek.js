@@ -1,12 +1,15 @@
 const fs = require('fs'),
-      rand = require('./random.js');
-      opts = { encoding: 'utf8' };
+      rand = require('./random.js'),
+      opts = { encoding: 'utf8' },
       range = require('./range.js');
+const PokemonList = require('./pokemonListClass.js');
 
+var hiddenPokListForReturn = new PokemonList;
 
 
 const getRandomListOfPoks = (pokemonList) => {
-  let poksForHide = [];
+
+  let poksForHide = new PokemonList;
   let numberPoksForHide = rand(1,Math.min(pokemonList.length,3));
 
   for (let i = 0; i<numberPoksForHide; i++) {
@@ -19,7 +22,7 @@ const getRandomListOfPoks = (pokemonList) => {
 };
 
 
-const getNumberOfSecretFolders = poksForHide => {
+const getLinkFolderPokemon = poksForHide => {
   let numberOfSecretFolders = [];
 
   while (numberOfSecretFolders.length != poksForHide.length) {
@@ -29,9 +32,14 @@ const getNumberOfSecretFolders = poksForHide => {
     };
   };
 
-  console.log(numberOfSecretFolders);
-  return numberOfSecretFolders;
+  let linkFolderPokemon = [];
+    poksForHide.forEach(function(pokemon,i,arr){
+      linkFolderPokemon.push({pok: pokemon, folder: numberOfSecretFolders[i]});
+    });
+
+  return linkFolderPokemon;
 };
+
 
 const setLocalPathes = path => {
   let pathesArray = range(1,10);
@@ -42,57 +50,48 @@ const setLocalPathes = path => {
   return pathesArray;
 };
 
-const createSecretFiles = (linkFolderPokemon,numberOfSecretFolders,pokemonList,pathesArray,i) => {
-  let j = i;
-  if (numberOfSecretFolders.indexOf(j+1) != -1){
-    linkFolderPokemon.forEach(function(pokemon,n,arr){
 
-      if(pokemon.folder == (j+1)) {
+const createSecretFiles = (linkFolderPokemon,path,i) => {
 
-        fs.writeFile(pathesArray[j] +'/pokemon.txt', pokemon.pok.name + '|' + pokemon.pok.level, opts, err => {
-          if (err) throw err;
-          console.log('Файл создан!');
-          hiddenPokListForReturn.push(pokemon.pok);
-          //console.log(hiddenPokListForReturn);
-        });
-      };
-    });
-  };
+  //let curentFolderNumberArray = path.split("/");
+  //curentFolderNumber = curentFolderNumberArray[curentFolderNumberArray.length-1];
+
+  linkFolderPokemon.forEach(function(pokemon,n,arr) {
+    //if (pokemon.folder == curentFolderNumber) {
+      if (pokemon.folder == i) {
+      let message = pokemon.pok.name + '|' + pokemon.pok.level;
+
+      fs.writeFile(path +'/pokemon.txt', message, opts, err => {
+        if (err) throw err;
+        console.log('Файл создан!');
+        hiddenPokListForReturn.push(pokemon.pok);
+      });
+    };
+  });
 };
 
-var hiddenPokListForReturn = [];
+
 
 const hide = (path,pokemonList) => {
+
   let poksForHide = getRandomListOfPoks(pokemonList);
-  console.log(poksForHide.length);
-  let numberOfSecretFolders = getNumberOfSecretFolders(poksForHide);
+  let linkFolderPokemon = getLinkFolderPokemon(poksForHide);
   let pathesArray = setLocalPathes(path);
 
   fs.mkdir(path, err => {
-  if (err) throw err;
-  console.log(`Папка ${path} создана!`);
+    if (err) throw err;
+    console.log(`Папка ${path} создана!`);
 
-  let linkFolderPokemon = [];
-  poksForHide.forEach(function(pokemon,i,arr){
-    linkFolderPokemon.push({pok:pokemon,folder:numberOfSecretFolders[i]});
-  });
-  console.log(linkFolderPokemon);
-
-
-  for (let i = 0; i < 10; i++) {
-    fs.mkdir(pathesArray[i], err => {
-      if (err) throw err;
-      console.log(`Папка ${pathesArray[i]} создана!`);
-
-      createSecretFiles(linkFolderPokemon, numberOfSecretFolders, pokemonList, pathesArray, i);
-
+    pathesArray.forEach(function (path,i,arr){
+      fs.mkdir(path, err => {
+        if (err) throw err;
+        console.log(`Папка ${path} создана!`);
+        createSecretFiles(linkFolderPokemon, path, i+1);
+      });
     });
-  };
-
   });
 return poksForHide;
 };
-
 
 
 module.exports = hide;
