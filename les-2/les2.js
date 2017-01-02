@@ -13,7 +13,5 @@ poklist.forEach(function (pok,i,arr) {
 
 
 
-
-
-hide('./field',pokemonList);
+//hide('./field',pokemonList);
 seek('./field');

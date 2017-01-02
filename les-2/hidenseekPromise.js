@@ -105,6 +105,7 @@ const hide = (path,pokemonList) => {
 const seek = (path) => {
   let conf = { encoding: 'utf8' };
   let pokList = new PokemonList;
+
   fs.readdir(path, (err,files) => {
     if (err) throw err;
     files.forEach(function(localPath,i,arr) {
