@@ -70,6 +70,7 @@ var createSecretFilesPromise = function (pathesArray,linkFolderPokemon,path) {
             });
           };
         });
+
       });
     });
   });
@@ -102,12 +103,27 @@ const hide = (path,pokemonList) => {
 
 
 const seek = (path) => {
-
-
-
+  let conf = { encoding: 'utf8' };
+  let pokList = new PokemonList;
+  fs.readdir(path, (err,files) => {
+    if (err) throw err;
+    files.forEach(function(localPath,i,arr) {
+      fs.readdir(path + '/' + localPath, (err,files) => {
+        if (err) throw err;
+        if (files.length > 0) {
+          fs.readFile(path + '/' + localPath + '/' + files[0], conf, (err, data) => {
+          if (err) throw err;
+          let pokemon = data.split('|');
+          pokList.add(pokemon[0],pokemon[1]);
+          console.log(pokList);
+          });
+        };
+      });
+    });
+  });
 };
 
 
 
 
-module.exports = hide;
+module.exports = {hide, seek};
