@@ -52,6 +52,7 @@ const setLocalPathes = path => {
 
 
 var createSecretFilesPromise = function (pathesArray,linkFolderPokemon,path) {
+  let counter = 0;
 
   return new Promise((resolve, reject) => {
     pathesArray.forEach(function (path,i,arr){
@@ -66,7 +67,10 @@ var createSecretFilesPromise = function (pathesArray,linkFolderPokemon,path) {
               if(err) return reject(err);
               console.log('Файл создан!');
               hiddenPokListForReturn.push(pokemon.pok);
-              resolve();
+              counter ++;
+              if (counter == linkFolderPokemon.length) {
+                resolve();
+              }
             });
           };
         });
