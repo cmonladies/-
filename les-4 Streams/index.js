@@ -11,7 +11,8 @@ hash.on('readable', () => {
     console.log(data.toString('hex'));
 });
 
-//hash.setMaxListeners(8);
-
-input.pipe(hash); //Если только так, в консоль пишет
-input.pipe(hash).pipe(out); //Если так - только в файл. Вопрос!
+//input.pipe(hash); //Если только так, в консоль пишет
+//input.pipe(hash).pipe(out); //Если так - только в файл. Вопрос!
+input.pipe(hash).pipe(process.stdout);
+hash.pipe(out);
+//Вопрос! Почему при цепочке стримов input -> hash -> out не срабатывает hash.on('readable' .... ?
