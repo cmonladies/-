@@ -91,7 +91,8 @@ var createHeadFolderPromise = function (path) {
 };
 
 
-const hide = (path,pokemonList) => {
+//const hide = (path,pokemonList,callback) => {
+  const hide = (path,pokemonList) => {
 
   let poksForHide = getRandomListOfPoks(pokemonList);
   let linkFolderPokemon = getLinkFolderPokemon(poksForHide);
@@ -100,9 +101,30 @@ const hide = (path,pokemonList) => {
   createHeadFolderPromise(path)
   .then(() => createSecretFilesPromise(pathesArray,linkFolderPokemon, path))
   .then(() => {console.log(hiddenPokListForReturn)})
-  .then(() => {return hiddenPokListForReturn})
+  .then(() => {console.log('poksforhide',poksForHide.length)})
+  .then(() => {console.log('hiddenPokListForReturn', hiddenPokListForReturn.length)})
+  //.then(() => {return hiddenPokListForReturn})
+  //.then(() => {callback(hiddenPokListForReturn)})
+  .then(() => {console.log('test')})
   .catch( err => console.log(err));
+/*
+  while (hiddenPokListForReturn.length != poksForHide.length)
+  {
+   1;
+  };
+  */
+  return hiddenPokListForReturn;
 };
+
+
+
+
+
+
+
+
+
+
 
 
 

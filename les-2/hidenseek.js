@@ -90,8 +90,16 @@ const hide = (path,pokemonList) => {
       });
     });
   });
-return poksForHide;
+  /*while (hiddenPokListForReturn.length != poksForHide.length)
+  {
+   1;
+  };
+  */
+  return hiddenPokListForReturn;
 };
+
+
+
 
 
 const seek = (path) => {
