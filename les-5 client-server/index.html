@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Урок 5</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container" style="padding: 30px;">
+    <form action="/result" method="GET">
+      <p class="help-block">Для получение хэша введите имя и фамилию</p>
+
+      <div class="form-group">
+        <label for="first_name">Имя</label>
+        <input type="text" class="form-control" name="first_name" id="first_name" placeholder="Enter first name">
+      </div>
+
+      <div class="form-group">
+        <label for="last_name">Фамилия</label>
+        <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Enter last name">
+      </div>
+
+      <button type="submit" class="btn btn-default">Отправить</button>
+    </form>
+  </div>
+</body>
+</html>
