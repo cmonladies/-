@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>les-9 MongoDB</title>
+ <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-resource.min.js"></script>
+
+<script type="text/javascript">
+
+let app = angular.module('app', []);
+app.controller("ctrl", function ($scope, $http) {
+
+    $scope.newAge = '';
+    $scope.neName = '';
+    $scope.newLastName = '';
+    $scope.usersList = [];
+
+    $scope.userForUpdate = '';
+    $scope.updateAge = "";
+    $scope.updateName = "";
+    $scope.updateLastName = "";
+    $scope.updaterFlag - false;
+    $scope.updatedUsersList = [];
+
+// Поолучаем пользователей из базы
+    $scope.getUsers = () => {
+      $http.get("/users").success(function(data) {
+        $scope.usersList = data;
+      });
+    };
+
+    $scope.getUsers();
+
+
+// Добавления пользователя в базу
+
+    $scope.addUser = (name,lastName,age) => {
+      let newUser = {
+        name: name,
+        lastName: lastName,
+        age: age
+      };
+
+      $http.post("/users", newUser).then(function(resolve) {
+        console.log("user added");
+        $scope.getUsers();
+      });
+    };
+
+
+
+
+
+    $scope.updateUser = function (user) {
+
+      $scope.userForUpdate = user;
+      $scope.updateAge = user.age;
+      $scope.updateName = user.name;
+      $scope.updateLastName = user.lastName;
+      $scope.updaterFlag = true;
+      };
+
+    $scope.sendToSererUpdateUser = (user, newName, newLastName, newAge) => {
+
+      let data = {
+        name: newName,
+        lastName: newLastName,
+        age: newAge
+      };
+      user.status = 'warning';
+
+      $http.put("/users/" + user._id, data)
+      .then(function(resolve) {
+        $scope.updaterFlag = false;
+        user.age = data.age;
+        user.name = data.name;
+        user.lastName = data.lastName;
+        user.status = 'warning';
+        $scope.updatedUsersList.push(user._id);
+        console.log($scope.updatedUsersList);
+      });
+    };
+
+
+// Удаляем измененных пользователей
+
+    $scope.delUsers = (usersList) => {
+
+      $http.post("/users/del", usersList).then(function(resolve) {
+        console.log("users deleted");
+        $scope.updatedUsersList = [];
+        $scope.getUsers();
+      });
+    };
+
+
+
+});
+
+</script>
+
+
+</head>
+<body ng-app="app">
+  <div ng-controller="ctrl">
+    <div class="container">
+      <h1>Задание к занятию «Основы MongoDB»</h1>
+      <p>
+      Написать консольное приложение которое должно:
+      <li>Добавлять список имён в коллекцию;</li>
+      <li>Выводить этот список;</li>
+      <li>Изменять несколько имён на другие;</li>
+      <li>Отображать изменённый список;</li>
+      <li>Удалять новые имена из п.3.</li>
+      </p>
+
+      <div class="well">
+        <h3>Введи данные нового пользователя</h3>
+        <form class="form-inline">
+          <div class="form-group">
+              <input type="text" class="form-control" ng-model="newName" placeholder="Имя">
+              <input type="text" class="form-control" ng-model="newLastName" placeholder="Фамилия">
+              <input type="text" class="form-control" ng-model="newAge" placeholder="Возраст">
+          </div>
+          <button type="submit" class="btn btn-primary" ng-click="addUser(newName,newLastName,newAge)"> Добавить </button>
+        </form>
+
+        <form ng-if = "updaterFlag" class="form-inline" style="margin-top: 15px;">
+        <h3>Измени необходимые поля</h3>
+          <div class="form-group">
+              <input type="text" class="form-control" ng-model="updateName" placeholder="Имя">
+              <input type="text" class="form-control" ng-model="updateLastName" placeholder="Фамилия">
+              <input type="text" class="form-control" ng-model="updateAge" placeholder="Возраст">
+          </div>
+          <button type="submit" class="btn btn-primary" ng-click="sendToSererUpdateUser(userForUpdate,updateName, updateLastName, updateAge)"> Изменить </button>
+        </form>
+
+
+        <div style="margin-top:15px;">
+        <button type="button" class="btn btn-primary btn-warning btn-lg" ng-click='delUsers(updatedUsersList)'>Удалить измененных</button>
+        </div>
+      </div>
+
+      <div>
+        <table class="table table-hover">
+          <tr>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Возраст</th>
+            <th></th>
+
+          <tr ng-repeat="user in usersList" ng-class="user.status">
+            <td>{{user.name}}</td>
+            <td>{{user.lastName}}</td>
+            <td>{{user.age}}</td>
+            <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" ng-click="updateUser(user)"></span></td>
+          </tr>
+        </table>
+      </div>
+
+
+
+    </div>
+  </div>
+</body>
+</html>
