@@ -84,7 +84,7 @@ app.put("/users/:id", (req, res, next) => {
 });
 
 
-app.post("/users/del", (req, res, next) => {
+app.delete("/users/:id", (req, res, next) => {
   // Connect to the server
   MongoClient.connect(url, function (err, db) {
   if (err) {
@@ -94,11 +94,10 @@ app.post("/users/del", (req, res, next) => {
       console.log('Connection established to', url);
 
       let collection = db.collection('users');
-      let usersList = req.body;
-      let usersId = usersList.map((id) => ObjectID(id));
-      console.log(usersList);
+      let user = req.params;
+      let usersId = ObjectID(user.id);
 
-      collection.deleteMany({_id: { $in: usersId }}, (err, result) => {
+      collection.deleteOne({_id: usersId }, (err, result) => {
       if(err) throw new Error(err);
       res.json({status: "ok"});
     });
@@ -106,9 +105,33 @@ app.post("/users/del", (req, res, next) => {
   });
 });
 
+app.post("/users/find", (req, res, next) => {
+
+  // Connect to the server
+  MongoClient.connect(url, function (err, db) {
+  if (err) {
+    console.log('Unable to connect to the Server', err);
+  } else {
+      // We are connected
+      console.log('Connection established to', url);
+      let collection = db.collection('users');
 
 
-app.listen(3001, () => {
+      let query = req.body;
+      console.log(query);
+
+      collection.find(query).toArray(function (err, result) {
+          res.json(result);
+          db.close();
+          console.log('connection closed');
+        });
+    };
+  });
+});
+
+
+
+app.listen(3003, () => {
   console.log("App run!");
 });
 

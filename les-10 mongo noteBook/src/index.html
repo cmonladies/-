@@ -3,15 +3,16 @@
 <head>
   <title>les-9 MongoDB</title>
  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-
-
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-resource.min.js"></script>
+
 
 <script type="text/javascript">
 
 let app = angular.module('app', []);
 app.controller("ctrl", function ($scope, $http) {
+
+    $scope.contPill = true;
 
     $scope.newAge = '';
     $scope.neName = '';
@@ -22,8 +23,11 @@ app.controller("ctrl", function ($scope, $http) {
     $scope.updateAge = "";
     $scope.updateName = "";
     $scope.updateLastName = "";
-    $scope.updaterFlag - false;
+    $scope.updaterFlag = false;
     $scope.updatedUsersList = [];
+
+    $scope.searchFlag = false;
+    $scope.findResults = [];
 
 // Поолучаем пользователей из базы
     $scope.getUsers = () => {
@@ -37,11 +41,11 @@ app.controller("ctrl", function ($scope, $http) {
 
 // Добавления пользователя в базу
 
-    $scope.addUser = (name,lastName,age) => {
+    $scope.addUser = (name,lastName,phone) => {
       let newUser = {
         name: name,
         lastName: lastName,
-        age: age
+        phone: phone
       };
 
       $http.post("/users", newUser).then(function(resolve) {
@@ -57,43 +61,68 @@ app.controller("ctrl", function ($scope, $http) {
     $scope.updateUser = function (user) {
 
       $scope.userForUpdate = user;
-      $scope.updateAge = user.age;
+      $scope.updatePhone = user.phone;
       $scope.updateName = user.name;
       $scope.updateLastName = user.lastName;
       $scope.updaterFlag = true;
       };
 
-    $scope.sendToSererUpdateUser = (user, newName, newLastName, newAge) => {
+    $scope.sendToSererUpdateUser = (user, newName, newLastName, newPhone) => {
 
       let data = {
         name: newName,
         lastName: newLastName,
-        age: newAge
+        phone: newPhone
       };
-      user.status = 'warning';
+
 
       $http.put("/users/" + user._id, data)
       .then(function(resolve) {
         $scope.updaterFlag = false;
-        user.age = data.age;
+        user.phone = data.phone;
         user.name = data.name;
         user.lastName = data.lastName;
         user.status = 'warning';
-        $scope.updatedUsersList.push(user._id);
-        console.log($scope.updatedUsersList);
       });
     };
 
 
-// Удаляем измененных пользователей
+// Удаляем абонента
 
-    $scope.delUsers = (usersList) => {
-
-      $http.post("/users/del", usersList).then(function(resolve) {
-        console.log("users deleted");
+    $scope.deleteUser = (user) => {
+      console.log(user);
+      user.status = 'danger';
+      if (confirm ('Вы уверены, что хотите удалить контакт ' + user.name + '?'))
+      {
+      $http.delete("/users/" + user._id).then(function(resolve) {
+        console.log("user deleted");
         $scope.updatedUsersList = [];
         $scope.getUsers();
       });
+      }
+    };
+
+// Удаляем абонента
+
+    $scope.findUsers = (name, lastName, phone) => {
+
+      let query = {};
+
+      if (name) {
+        query.name = name;
+      }
+      else if (lastName) {
+        query.lastName = lastName;
+      }
+      else {
+        query.phone = phone;
+      };
+
+      $http.post("/users/find", query).then(function(res) {
+        $scope.findResults = res.data;
+        $scope.searchFlag = true;
+      });
+
     };
 
 
@@ -107,56 +136,99 @@ app.controller("ctrl", function ($scope, $http) {
 <body ng-app="app">
   <div ng-controller="ctrl">
     <div class="container">
-      <h1>Задание к занятию «Основы MongoDB»</h1>
+      <h1>Задание к занятию «Все, что нужно знать про запросы в MongoDB»</h1>
       <p>
-      Написать консольное приложение которое должно:
-      <li>Добавлять список имён в коллекцию;</li>
-      <li>Выводить этот список;</li>
-      <li>Изменять несколько имён на другие;</li>
-      <li>Отображать изменённый список;</li>
-      <li>Удалять новые имена из п.3.</li>
+      Создать простое приложение на Express.js «Записная книжка» в виде API:
+      <li>Список телефонов с фамилией и именем;</li>
+      <li>Добавление нового контакта;</li>
+      <li>Редактирование старой информации;</li>
+      <li>Удаление контакта;</li>
+      <li>Поиск по номеру телефона, фамилии, имени.</li>
       </p>
-
-      <div class="well">
-        <h3>Введи данные нового пользователя</h3>
-        <form class="form-inline">
+      <ul class="nav nav-pills nav-justified">
+        <li role="presentation" ng-click="contPill=true; findPill=false; searchFlag=false;"><a href="#">Добавление контакта</a></li>
+        <li role="presentation" ng-click="findPill=true; contPill=false;"><a href="#">Поиск контакта</a></li>
+      </ul>
+      <div class="well" >
+        <div ng-if="contPill">
+        <h3>Введи данные нового абонента</h3>
+        <form class="form-inline" >
           <div class="form-group">
               <input type="text" class="form-control" ng-model="newName" placeholder="Имя">
               <input type="text" class="form-control" ng-model="newLastName" placeholder="Фамилия">
-              <input type="text" class="form-control" ng-model="newAge" placeholder="Возраст">
+              <input type="text" class="form-control" ng-model="phone" placeholder="Телефон">
           </div>
-          <button type="submit" class="btn btn-primary" ng-click="addUser(newName,newLastName,newAge)"> Добавить </button>
+          <button type="submit" class="btn btn-primary" ng-click="addUser(newName,newLastName,phone)"> Добавить </button>
         </form>
+        </div>
+
+        <div ng-if="findPill">
+        <h3>Поиск абонентов по одному из параметров</h3>
+        <form class="form-inline">
+          <div class="form-group">
+              <input type="text" class="form-control" ng-model="searchName" placeholder="Имя" ng-disabled="(searchphone.length || searchLastName.length)">
+              <input type="text" class="form-control" ng-model="searchLastName" placeholder="Фамилия" ng-disabled="(searchphone.length || searchName.length)">
+              <input type="text" class="form-control" ng-model="searchphone" placeholder="Телефон" ng-disabled="(searchName.length || searchLastName.length)">
+          </div>
+          <button type="submit" class="btn btn-primary" ng-click="findUsers(searchName, searchLastName, searchphone)"> Найти </button>
+        </form>
+        </div>
 
         <form ng-if = "updaterFlag" class="form-inline" style="margin-top: 15px;">
         <h3>Измени необходимые поля</h3>
           <div class="form-group">
               <input type="text" class="form-control" ng-model="updateName" placeholder="Имя">
               <input type="text" class="form-control" ng-model="updateLastName" placeholder="Фамилия">
-              <input type="text" class="form-control" ng-model="updateAge" placeholder="Возраст">
+              <input type="text" class="form-control" ng-model="updatePhone" placeholder="Телефон">
           </div>
-          <button type="submit" class="btn btn-primary" ng-click="sendToSererUpdateUser(userForUpdate,updateName, updateLastName, updateAge)"> Изменить </button>
+          <button type="submit" class="btn btn-warning" ng-click="sendToSererUpdateUser(userForUpdate,updateName, updateLastName, updatePhone)"> Изменить </button>
         </form>
 
-
-        <div style="margin-top:15px;">
-        <button type="button" class="btn btn-primary btn-warning btn-lg" ng-click='delUsers(updatedUsersList)'>Удалить измененных</button>
-        </div>
       </div>
 
-      <div>
+
+
+
+      <div style="padding-top: 15px;" ng-if= "searchFlag" >
+      <h2>Результаты поиска</h2>
+      <span ng-if="!(findResults.length)">Абонент не найден</span>
+        <table class="table table-hover" ng-if="(findResults.length)">
+          <tr>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Телефон</th>
+            <th></th>
+
+          <tr ng-repeat="user in findResults | filter: angSearch" ng-class="user.status">
+            <td>{{user.name}}</td>
+            <td>{{user.lastName}}</td>
+            <td>{{user.phone}}</td>
+            <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" ng-click="updateUser(user)"></span></td>
+            <td><span class="glyphicon glyphicon-trash" aria-hidden="true" ng-click="deleteUser(user)"></span></td>
+          </tr>
+        </table>
+      </div>
+
+
+      <h2>Поиск по ангуляровски :)</h2>
+      <input type="text" class="form-control" placeholder="Введи любой параметр для поиска" ng-model="angSearch">
+
+
+      <div style="padding-top: 15px;">
+      <h2>Телефонная книга</h2>
         <table class="table table-hover">
           <tr>
             <th>Имя</th>
             <th>Фамилия</th>
-            <th>Возраст</th>
+            <th>Телефон</th>
             <th></th>
 
-          <tr ng-repeat="user in usersList" ng-class="user.status">
+          <tr ng-repeat="user in usersList | filter: angSearch" ng-class="user.status">
             <td>{{user.name}}</td>
             <td>{{user.lastName}}</td>
-            <td>{{user.age}}</td>
+            <td>{{user.phone}}</td>
             <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" ng-click="updateUser(user)"></span></td>
+            <td><span class="glyphicon glyphicon-trash" aria-hidden="true" ng-click="deleteUser(user)"></span></td>
           </tr>
         </table>
       </div>
