@@ -139,12 +139,23 @@ app.controller("ctrl", function ($scope, $http) {
       <h1>Задание к занятию «Все, что нужно знать про запросы в MongoDB»</h1>
       <p>
       Создать простое приложение на Express.js «Записная книжка» в виде API:
-      <li>Список телефонов с фамилией и именем;</li>
-      <li>Добавление нового контакта;</li>
-      <li>Редактирование старой информации;</li>
-      <li>Удаление контакта;</li>
-      <li>Поиск по номеру телефона, фамилии, имени.</li>
+      <li><span class="glyphicon glyphicon-ok" aria-hidden="true"> </span> Список телефонов с фамилией и именем;</li>
+      <li><span class="glyphicon glyphicon-ok" aria-hidden="true"> </span> Добавление нового контакта;</li>
+     <li><span class="glyphicon glyphicon-ok" aria-hidden="true"> </span> Редактирование старой информации;</li>
+     <li><span class="glyphicon glyphicon-ok" aria-hidden="true"> </span> Удаление контакта;</li>
+    <li><span class="glyphicon glyphicon-ok" aria-hidden="true"> </span> Поиск по номеру телефона, фамилии, имени.</li>
       </p>
+
+      <p>
+      Дополнительное задание:
+
+      <li><span class="glyphicon glyphicon-ok" aria-hidden="true"> </span> Приложение на Express.js c WEB интерфейсом;</li>
+      <li><span class="glyphicon glyphicon-ok" aria-hidden="true"> </span> Валидация входящих данных и показ ошибок в Веб интерфейсе.</li>
+      <li>Добавление к контакту дополнительную информацию. Например skype, email.
+      Укаждого пользователя эта информация может быть разной.</li>
+      <li>Показ подробной информации о пользователе.</li>
+      </p>
+
       <ul class="nav nav-pills nav-justified">
         <li role="presentation" ng-click="contPill=true; findPill=false; searchFlag=false;"><a href="#">Добавление контакта</a></li>
         <li role="presentation" ng-click="findPill=true; contPill=false;"><a href="#">Поиск контакта</a></li>
@@ -152,14 +163,15 @@ app.controller("ctrl", function ($scope, $http) {
       <div class="well" >
         <div ng-if="contPill">
         <h3>Введи данные нового абонента</h3>
-        <form class="form-inline" >
+        <form class="form-inline" name="addForm" >
           <div class="form-group">
               <input type="text" class="form-control" ng-model="newName" placeholder="Имя">
               <input type="text" class="form-control" ng-model="newLastName" placeholder="Фамилия">
-              <input type="text" class="form-control" ng-model="phone" placeholder="Телефон">
+              <input type="text" class="form-control" ng-model="phone" name ='phone' ng-minlength="7" ng-maxlength="11" placeholder="Телефон">
           </div>
-          <button type="submit" class="btn btn-primary" ng-click="addUser(newName,newLastName,phone)"> Добавить </button>
+          <button type="submit" class="btn btn-primary" ng-click="addUser(newName,newLastName,phone)" ng-disabled="addForm.$invalid"> Добавить </button>
         </form>
+        <p class="text-danger" ng-show="addForm.phone.$invalid && !addForm.phone.$pristine" class="warning"> Длина телефонного номера от 7 до 12 символов! </p>
         </div>
 
         <div ng-if="findPill">
