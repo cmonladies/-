@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html ng-app="todoApp">
+ <head>
+<title> toDo les-11</title>
+<meta charset="utf-8">
+
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="taskman.css" />
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-resource.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route.min.js"></script>
+
+<script>
+
+
+          var todoApp = angular.module("todoApp", ['ngRoute'])
+          .config( ['$routeProvider', function($routeProvider) {
+              $routeProvider
+                .when('/tasks', {
+                  templateUrl: 'first.html'
+                })
+                .when('/users', {
+                  templateUrl: 'second.html'
+                })
+                .when('/stat', {
+                  templateUrl: 'statistic.html'
+                })
+                .otherwise({
+                  redirectTo: '/'
+                });
+              }]);
+
+
+
+          //Ctrl
+          todoApp.controller("todoCtrl", function ($scope,$http) {
+
+            $scope.searchedTasks = [];
+
+
+              $scope.showText = function (task) {
+                  if(task.status == 1)
+                    return "решена. " + "Дата решения: " + task.dateSolution;
+                  else return "не решена ";
+             };
+
+
+              // Поолучаем задания из базы
+                $scope.getTasks = () => {
+                  $http.get("/tasks").success(function(data) {
+                    $scope.tasksList = data;
+                  });
+                };
+
+                $scope.getTasks();
+
+
+
+              //добавление нового значения
+                  $scope.addtodo = (username,name,task) => {
+                    let newTask = {
+                      name: name,
+                      description: task,
+                      autor: username,
+                      status: 0
+                    };
+
+                    $http.post("/tasks", newTask).then(function(resolve) {
+                      console.log("New task added");
+                      $scope.getTasks();
+                    });
+                  };
+
+
+              //изменение статуса
+                $scope.toggleStatus = function(id, status) {
+                  if(status=='1'){status='0';}else{status='1';}
+
+                  let newTask = {
+                      status: status
+                    };
+
+                  $http.put("/tasks/togglestatus/" + id, newTask).then(function(resolve) {
+                      console.log("status changed");
+                      $scope.getTasks();
+                      $scope.getUsersListForStatistic();
+                      });
+                };
+
+                 //редактирование задачи
+                $scope.updateTask = (task) => {
+                  let newTask = {
+                      name: task.name,
+                      description: task.description,
+                      autor: task.autor,
+                      status: task.status
+                    };
+
+                  $http.put("/tasks/" + task._id, newTask).then(function(resolve) {
+                      console.log("status changed");
+                      $scope.getTasks();
+                      });
+                };
+
+
+
+              //удаление значения из таблицы
+                $scope.deleteTask = function (id) {
+                        if(confirm("Удалить данную проблему из базы?")){
+                          $http.delete("/tasks/" + id).then(function(resolve) {
+                              console.log("user deleted");
+                              $scope.getTasks();
+                            });
+                        }
+                      };
+
+                $scope.searchTasks = (searchName,searchDescription) => {
+
+                  let paramsForSeach = {
+                      name: searchName,
+                      description: searchDescription
+                    };
+                    console.log(paramsForSeach);
+
+                    $http.post("/tasks/find", paramsForSeach).then(function(res) {
+                      $scope.searchedTasks = res.data;
+                      $scope.searchFlag = true;
+                    });
+
+                };
+
+
+
+                $scope.addUser = (newUser) => {
+                  let user = {
+                      name: newUser
+                    };
+
+                    $http.post("/users", user).then(function(resolve) {
+                      console.log("New user added");
+                      $scope.getUsers();
+                    });
+                };
+
+
+                $scope.getUsers = () => {
+                  $http.get("/users").success(function(data) {
+                    $scope.usersList = data;
+                  });
+                };
+
+                $scope.getUsers();
+
+
+                $scope.deleteUser = (user) => {
+                   if(confirm("Удалить пользователя " + user.name + " из базы?")){
+                          $http.delete("/users/" + user._id).then(function(resolve) {
+                              console.log("user deleted");
+                              $scope.getUsers();
+                            });
+                        }
+
+                };
+
+                $scope.setModalParams = (user) => {
+                  $scope.newName = user.name;
+                  $scope.idForEdit = user._id;
+                };
+
+                $scope.editUser = (newName, idForEdit) => {
+                   let newUser = {
+                      name: newName
+                    };
+
+                  $http.put("/users/" + idForEdit, newUser).then(function(resolve) {
+                      console.log("Username changed");
+                      $scope.getUsers();
+                      });
+                };
+
+
+                $scope.getUsersListForStatistic = () => {
+                  $http.get("/stat").success(function(data) {
+                    $scope.usersListForStatistic = data;
+                  });
+                };
+
+                $scope.getUsersListForStatistic();
+
+  });
+
+</script>
+
+
+</head>
+<body>
+
+<div ng-controller="todoCtrl" class="container" >
+
+  <div>
+    <ul class="nav nav-pills">
+      <li  class="active" data-toggle="pill"><a href="/#/tasks">Задачи</a></li>
+      <li  data-toggle="pill"><a href="/#/users">Пользователи</a></li>
+      <li  data-toggle="pill"><a href="/#/stat">Статистика</a></li>
+    </ul>
+  </div>
+
+<ng-view> </ng-view>
+
+<footer style="margin-top: 10px;">
+  <div class="alert alert-warning" role="alert">
+    <p>Готов к предложениям по доработке! Ветров Андрей <i class="glyphicon glyphicon-thumbs-up"></i> </p>
+    </div>
+</footer>
+
+
+</div>
+
+</body>
+</html>

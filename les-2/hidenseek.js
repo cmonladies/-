@@ -108,6 +108,7 @@ const seek = (path) => {
   fs.readdir(path, (err,files) => {
     if (err) throw err;
     files.forEach(function(localPath,i,arr) {
+      console.log(localPath);
       fs.readdir(path + '/' + localPath, (err,files) => {
         if (err) throw err;
         if (files.length > 0) {
@@ -125,4 +126,4 @@ const seek = (path) => {
 
 
 
-module.exports = hide;
+module.exports = {hide, seek};

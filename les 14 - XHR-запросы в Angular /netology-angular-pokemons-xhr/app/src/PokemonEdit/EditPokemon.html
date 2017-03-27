@@ -1,0 +1,50 @@
+<style>
+    .ng-dirty.ng-invalid {
+        border-color: #FA787E;
+    }
+
+    .ng-dirty.ng-valid {
+        border-color: #78FA89;
+    }
+
+</style>
+
+
+<div ng-if="(!pokesListLoad)">
+   <div class="loader"></div>
+   <p>Загрузка списков...</p>
+</div>
+
+<div class="row" ng-if="(pokesListLoad)">
+  <h1>Выбери покемона для редактирования из списка </h1>
+    <div class="col-md-6">
+
+        <div class="list-group">
+            <a ng-click="beginEditing(singlePokemon)" class="list-group-item" ng-repeat="singlePokemon in pokemons">
+
+                <h4>
+                    {{singlePokemon.name | uppercase }} <small>Вес: {{singlePokemon.weight | uppercase}} </small>
+                </h4>
+
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-success" role="alert" ng-if="editPokemonId">Покемон отредактирован:  {{editPokemonId}}!</div>
+
+<h3>Отредактируй значения покемона <small> ID: {{pokemonForEdit.id}}</small></h3>
+<form name="pokemonForm" novalidate>
+    <div class="form-group">
+        <label>Имя</label>
+        <input class="form-control" ng-model="pokemonForEdit.name" type="text" placeholder="Имя" required>
+    </div>
+    <div class="form-group">
+        <label>Вес</label>
+        <input class="form-control" ng-model="pokemonForEdit.weight" type="text" placeholder="Вес">
+    </div>
+
+    <button type="submit" class="btn btn-default" ng-click="editPokemon(pokemonForEdit)" ng-disabled="pokemonForm.$invalid">Сохранить</button>
+</form>
+
+

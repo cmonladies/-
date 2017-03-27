@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Домашнее задание "Основы MongoDB"</title>
+	<style type="text/css">
+		.form {
+			max-width: 400px;
+		}
+
+		.form-group {
+			padding-bottom: 10px;
+		}
+
+		.form input[type=text] {
+			width: 100%;
+		}
+
+		.record  {
+			padding: 5px;
+		}
+
+		.error {
+			color: red;
+			cursor: pointer;
+		}
+
+		.update {
+			color: blue;
+			text-decoration: underline;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body ng-app="app">
+	<div class="notebook" ng-controller="notebookCtrl as nc">
+		<div class="form" ng-show="nc.showForm">
+			<h2 ng-hide="nc.updateFlag">Добавить запись</h2>
+			<h2 ng-show="nc.updateFlag">Обновить запись</h2>
+			<div class="form-group">
+				<label for="firstnameInput">Имя: </label>
+				<input type="text" id="firstnameInput" ng-model="nc.record.firstname">
+				<span class="error" ng-show="nc.formError.firstname">Поле "Имя" должно содержать от 3 символов</span>
+			</div>
+			<div class="form-group">
+				<label for="lastnameInput">Фамилия: </label>
+				<input type="text" id="lastnameInput" ng-model="nc.record.lastname">
+				<span class="error" ng-show="nc.formError.lastname">Поле "Фамилия" должно содержать от 3 символов</span>
+			</div>
+			<div class="form-group">
+				<label for="phoneInput">Телефон: </label>
+				<input type="text" id="phoneInput" ng-model="nc.record.phone">
+				<span class="error" ng-show="nc.formError.phone">Поле "Телефон" должно содержать 10 цифр</span>
+			</div>
+			<div class="form-group">
+				<label for="showEmailInput">Email: </label>
+				<input type="checkbox" id="showEmailInput" ng-model="nc.showInput.email">
+				<label for="showSkypeInput">Skype: </label>
+				<input type="checkbox" id="showSkypeInput" ng-model="nc.showInput.skype">
+			</div>
+			<div class="form-group" ng-show="nc.showInput.email">
+				<label for="emailInput">Email: </label>
+				<input type="text" id="emailInput" ng-model="nc.record.email">
+				<span class="error" ng-show="nc.formError.email">Поле "Email" должно иметь формат "example@mail.ru"</span>
+			</div>
+			<div class="form-group" ng-show="nc.showInput.skype">
+				<label for="skypeInput">Skype: </label>
+				<input type="text" id="skypeInput" ng-model="nc.record.skype">
+			</div>
+
+			<button ng-hide="nc.updateFlag" ng-click="nc.sendRecord(nc.record)">Добавить</button>
+			<button ng-show="nc.updateFlag" ng-click="nc.sendUpdateRecord(nc.record)">Обновить</button>
+		</div>
+
+		<div class="info" ng-show="nc.showInfo">
+			<div class="field"><strong>{{nc.record.lastname}} {{nc.record.firstname}}</strong></div>
+			<div class="field">Контактные телефон: {{nc.record.phone}}</div>
+			<div class="field" ng-show="nc.record.email">Email: {{nc.record.email}}</div>
+			<div class="field" ng-show="nc.record.skype">Skype: {{nc.record.skype}}</div>
+		</div>
+
+		<div class="records-list">
+			<h3>Список записей ({{nc.records.length}} запись(-ей)) <button ng-click="nc.toggleShow('add')">Добавить запись</button></h3>
+			<div class="search">Поиск: <input type="text" placeholder="Имя, Фамилия, Телефон" ng-model="searchText"> <button ng-click="nc.searchRecords(searchText)">Найти</button>&nbsp;<button ng-click="nc.searchRecords('')">Сбросить</button></div>
+			<div class="record" ng-repeat="item in nc.records">
+				<div>
+					<span class="col-info" ng-click="nc.viewRecord(item)">{{item.lastname}} {{item.firstname}} т. {{item.phone}}</span>
+					<span class="update" ng-click="nc.updateState(item)">Обновить</span>&nbsp;
+					<span class="error" ng-click="nc.deleteRecord(item)">Удалить</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-resource.min.js"></script>
+<script type="text/javascript" src="/main.js"></script>
+</html>

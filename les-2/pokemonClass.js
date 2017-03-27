@@ -5,10 +5,10 @@ class Pokemon {
     this.name = name;
     this.level = level;
   }
-}
-Pokemon.prototype.show = function() {
+  show () {
   console.log(`My name is ${this.name}. My level is ${this.level}!`);
-};
+  }
+}
 
 Pokemon.prototype.valueOf = function() { return this.level; };
 

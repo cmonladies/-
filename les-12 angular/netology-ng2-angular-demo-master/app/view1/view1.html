@@ -1,0 +1,44 @@
+Дропдаун с фильтрацией по типу:
+<select ng-model="seacrhByType">
+    <option value="">Все</option>
+    <option value="normal">Нормальный</option>
+    <option value="fire">Огонь</option>
+    <option value="water">Вода</option>
+    <option value="electric">Электричество</option>
+    <option value="poison">Отравленный</option>
+    <option value="grass">Трава</option>
+</select>
+
+<p>
+Найти:
+<input ng-model="searchQuery"><br><br>
+</p>
+
+Сортировать по:
+<select ng-model="myOrderProperty">
+    <option value="id">ID</option>
+    <option value="weight">Весу</option>
+    <option value="height">Росту</option>
+    <option value="name">Имени</option>
+</select>
+<p>
+<label>Сортировать по убыванию:</label>
+<input type="checkbox" ng-model="reverse">
+</p>
+
+<ul>
+    <li ng-repeat="pokemon in pokemons | filter: customFilter | orderBy: myOrderProperty :reverse">
+        <img src="{{pokemon.ThumbnailImage}}" ng-click="alertPokesName(pokemon);">
+
+        <small>ID #{{pokemon.id }}</small>
+        <h1 ng-class="{'water' : pokemon.type.indexOf('water') != -1, 'fire' : pokemon.type.indexOf('fire') != -1, 'grass' : pokemon.type.indexOf('grass') != -1}">{{pokemon.name}}</h1>
+        <p>Вес: {{pokemon.weight}}, рост: {{pokemon.height}}</p>
+        <p>Тип: {{pokemon.type [0]}}</p>
+        <hr />
+    </li>
+</ul>
+
+<p ng-show="myQuery">
+    Выведены покемоны, содержащие
+    {{myQuery}}
+</p>

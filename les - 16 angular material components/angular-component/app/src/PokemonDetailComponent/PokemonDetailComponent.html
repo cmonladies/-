@@ -1,0 +1,28 @@
+<uib-tabset active="activeTab">
+
+    <uib-tab heading="Инфо">
+
+        <h1 class="media-heading">{{PokeDetail.pokemon.name | uppercase }}</h1>
+        <p>Вес:
+            {{PokeDetail.pokemon.weight}}, рост:
+            {{PokeDetail.pokemon.height}}</p>
+
+    </uib-tab>
+
+    <uib-tab heading="Операции" >
+
+        <button class="btn btn-danger" ng-click="PokeDetail.deletePokemon(PokeDetail.pokemon.objectId)">
+            <span class="glyphicon glyphicon-trash"></span>
+            Удалить
+        </button>
+        <a class="btn btn-primary" href="#!/edit/{{PokeDetail.pokemon.objectId}}">
+            Редактировать
+        </a>
+
+    </uib-tab>
+
+</uib-tabset>
+
+
+<div class="alert alert-success" role="alert" ng-if="PokeDetail.deletionSuccess">Пока, покемон!</div>
+<div class="alert alert-danger" role="alert" ng-if="PokeDetail.deletionError">Покемоны не сдаются!</div>

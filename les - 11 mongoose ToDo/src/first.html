@@ -1,0 +1,223 @@
+  <h1>Добавление новой задачи {{username}}</h1>
+
+  <p>
+    <div class="input-group">
+      <span class="input-group-addon"> <i class="glyphicon glyphicon-user"></i></span>
+      <select class="form-control" ng-model="username" autofocus >
+        <option ng-repeat="username in usersList">{{username.name}}</option>
+      </select>
+    </div>
+  </p>
+
+
+
+  <div class="well">
+    <div class="row">
+      <div class="col-md-12">
+     <div class="input-group">
+        <div class="input-group-addon"><i class="glyphicon  glyphicon-tag"></i></div>
+        <input type="text" class="form-control" placeholder="Имя задачи" ng-model="todoName">
+      </div>
+      </div>
+    </div>
+    <div class="row" style="padding-top: 10px;">
+      <div class="col-md-12">
+        <textarea  rows="3" class="form-control input-lg focusedInput" ng-model="todoDescription" placeholder="Описание задачи" aria-describedby="basic-addon2"></textarea>
+      </div>
+    </div>
+    <div class="row" style="padding-top: 10px;">
+      <div class="col-md-12">
+        <span class="input-group-btn">
+          <button class="btn btn-primary btn-lg btn btn-block" ng-click="addtodo(username,todoName,todoDescription)" > <i class="glyphicon  glyphicon-plus"></i>&nbsp;  Добавить</button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+<div class="panel-default" style="padding: 15px;">
+
+<button class="btn btn-primary btn-block" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"><i class="glyphicon  glyphicon-search"></i>
+Меню поиска</button>
+
+
+<div class="collapse" id="collapseExample" style="margin-top: 10px;">
+  <div class="well">
+  <h3>Введи параметры поиска </h3>
+  <small>Если поле пустое, условие игнорируется</small>
+  <div class="row" style="margin-top: 10px;">
+      <div class="col-md-6">
+        <div class="input-group">
+          <div class="input-group-addon"><i class="glyphicon  glyphicon-tag"></i></div>
+          <input type="text" class="form-control" placeholder="Имя задачи" ng-model="searchName"
+          >
+        </div>
+      </div>
+      <div class="col-md-6">
+       <div class="input-group">
+          <div class="input-group-addon"><i class="glyphicon  glyphicon-tag"></i></div>
+          <input type="text" class="form-control" placeholder="Описание задачи" ng-model="searchDescription">
+        </div>
+    </div>
+  </div>
+
+    <button style="margin-top: 10px" class="btn btn-warning btn btn-block" ng-click="searchTasks(searchName,searchDescription)" > <i class="glyphicon  glyphicon-search"></i>&nbsp; Поиск</button>
+
+
+
+</div>
+</div>
+
+<div class="panel panel-default" style="padding:10px; margin-top:25px;" ng-if="searchedTasks.length">
+    <h2> Найдено задач: ({{searchedTasks.length}})</h2>
+
+    <div class="panel panel-default"  ng-repeat="task in searchedTasks | orderBy: '-dateSolution'">
+
+    <div class="input-group" >
+               <span class="input-group-addon" >
+                <input
+                type="checkbox"
+                value="{{task.status}}"
+                ng-click="toggleStatus(task._id, task.status)"
+                ng-checked="task.status==1"/>
+               </span>
+
+             <p   ng-class="{strike:task.status==1}" style="margin:10px;"><b><u>{{task.name}}:</u></b> {{task.description}}</p>
+
+          </div>
+
+
+          <div class="well" ng-if="task.edit==1">
+          <div class="row">
+            <a style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;" ng-click="task.edit=0" class="pull-right">Отменить редактирование  <i class="glyphicon glyphicon-remove-sign"></i></a>
+          </div>
+
+    <div class="row">
+      <div class="col-md-12">
+     <div class="input-group">
+        <div class="input-group-addon"><i class="glyphicon  glyphicon-tag"></i></div>
+        <input type="text" class="form-control" placeholder="Имя задачи" ng-model="task.name">
+      </div>
+      </div>
+    </div>
+
+    <div class="row" style="padding-top: 10px;">
+      <div class="col-md-12">
+        <textarea  rows="3" class="form-control input-lg focusedInput" ng-model="task.description" placeholder="Описание задачи" aria-describedby="basic-addon2"></textarea>
+      </div>
+    </div>
+
+    <div class="row" style="padding-top: 10px;">
+      <div class="col-md-6">
+        <div class="form-group">
+        <label for="taskAutor">Ответсвенный исполнитель</label>
+        <div class="input-group">
+        <span class="input-group-addon"> <i class="glyphicon glyphicon-user"></i></span>
+          <select class="form-control" ng-model="task.autor" autofocus >
+            <option>{{task.autor}}</option>
+            <option ng-repeat="username in usersList">{{username.name}}</option>
+          </select>
+      </div>
+      </div>
+      </div>
+    </div>
+
+    <div class="row" style="padding-top: 10px;">
+      <div class="col-md-12">
+        <span class="input-group-btn">
+          <button class="btn btn-warning btn-lg btn btn-block" ng-click="updateTask(task)" > <i class="glyphicon  glyphicon-pencil"></i>&nbsp;  Изменить значение</button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+
+
+        <div class="panel-footer">
+            <a style="margin-left: 10px; margin-right: 10px;" ng-click="deleteTask(task._id)" class="pull-right"><i class="glyphicon glyphicon-trash"></i></a>
+            <a ng-click="task.edit=1;" class="pull-right"><i class="glyphicon glyphicon-edit"></i></a>
+            <p style="height:auto; font-size:8pt;" >Ответсвенный исполнитель: {{task.autor}}. Задача {{showText(task)}}  </p>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+  <div class="panel panel-default" style="padding:10px; margin-top:25px;">
+    <h2>Список задач ({{tasksList.length}})</h2>
+
+    <div class="panel panel-default"  ng-repeat="task in tasksList | orderBy: '-dateSolution'">
+
+         <div class="input-group" >
+               <span class="input-group-addon" >
+                <input
+                type="checkbox"
+                value="{{task.status}}"
+                ng-click="toggleStatus(task._id, task.status)"
+                ng-checked="task.status==1"/>
+               </span>
+
+             <p   ng-class="{strike:task.status==1}" style="margin:10px;"><b><u>{{task.name}}:</u></b> {{task.description}}</p>
+
+          </div>
+
+
+          <div class="well" ng-if="task.edit==1">
+          <div class="row">
+            <a style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;" ng-click="task.edit=0" class="pull-right">Отменить редактирование  <i class="glyphicon glyphicon-remove-sign"></i></a>
+          </div>
+
+    <div class="row">
+      <div class="col-md-12">
+     <div class="input-group">
+        <div class="input-group-addon"><i class="glyphicon  glyphicon-tag"></i></div>
+        <input type="text" class="form-control" placeholder="Имя задачи" ng-model="task.name">
+      </div>
+      </div>
+    </div>
+
+    <div class="row" style="padding-top: 10px;">
+      <div class="col-md-12">
+        <textarea  rows="3" class="form-control input-lg focusedInput" ng-model="task.description" placeholder="Описание задачи" aria-describedby="basic-addon2"></textarea>
+      </div>
+    </div>
+
+    <div class="row" style="padding-top: 10px;">
+      <div class="col-md-6">
+        <div class="form-group">
+        <label for="taskAutor">Ответсвенный исполнитель</label>
+        <div class="input-group">
+        <span class="input-group-addon"> <i class="glyphicon glyphicon-user"></i></span>
+          <select class="form-control" ng-model="task.autor" autofocus >
+            <option>{{task.autor}}</option>
+            <option ng-repeat="username in usersList">{{username.name}}</option>
+          </select>
+      </div>
+      </div>
+      </div>
+    </div>
+
+    <div class="row" style="padding-top: 10px;">
+      <div class="col-md-12">
+        <span class="input-group-btn">
+          <button class="btn btn-warning btn-lg btn btn-block" ng-click="updateTask(task)" > <i class="glyphicon  glyphicon-pencil"></i>&nbsp;  Изменить значение</button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+
+
+        <div class="panel-footer">
+            <a style="margin-left: 10px; margin-right: 10px;" ng-click="deleteTask(task._id)" class="pull-right"><i class="glyphicon glyphicon-trash"></i></a>
+            <a ng-click="task.edit=1;" class="pull-right"><i class="glyphicon glyphicon-edit"></i></a>
+            <p style="height:auto; font-size:8pt;" >Ответсвенный исполнитель: {{task.autor}}. Задача {{showText(task)}}  </p>
+
+        </div>
+ </div>
+
+  </div>
+

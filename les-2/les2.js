@@ -1,5 +1,5 @@
-const hide = require('./hidenseek');
-//const hide = require('./hidenseekPromise.js').hide;
+//const hide = require('./hidenseek');
+const hide = require('./hidenseekPromise.js').hide;
 const poklist = require('./poklist');
 const PokemonList = require('./pokemonListClass.js');
 const seek = require('./hidenseekPromise.js').seek;
@@ -13,11 +13,12 @@ poklist.forEach(function (pok,i,arr) {
 
 let pokemonListHiddenMain = new PokemonList;
 /*
-hide('./field',pokemonList, function(hiddenPokListForReturn){
-  pokemonListHiddenMain = hiddenPokListForReturn;
-  console.log(pokemonListHiddenMain);
+var a = hide('./field',pokemonList, function(hiddenPokListForReturn){
+  console.log('main:',hiddenPokListForReturn);
+  return pokemonListHiddenMain;
 });
 */
-console.log(hide('./field',pokemonList));
 
-//seek('./field');
+//console.log(hide('./field',pokemonList));
+
+seek('./field');

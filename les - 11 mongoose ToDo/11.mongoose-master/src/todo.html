@@ -1,0 +1,35 @@
+<h1>Список задач <a class="btn btn-default" href="#/add-todo">Добавить задачу</a></h1>
+
+<div class="todo-search form-inline">
+	<div class="form-group">
+		<label for="inputSearch">Поиск: </label>
+		<input type="text" class="form-control" id="inputSearch" ng-model="sc.searchText">
+		<button class="btn btn-default glyphicon glyphicon-search" ng-click="tc.searchTodo(sc.searchText)"></button> 
+	</div>
+</div>
+
+<div>Сортировать по: Дате выполнения <span class="text-primary" ng-click="tc.toggleSort()">{{tc.pagination.sort ? "DESC" : "ASC"}}</span></div>
+
+<div class="todo-list row">
+	<div class="col-xs-12 col-md-6 col-lg-4 todo-item" ng-repeat="item in tc.todoList" ng-class="{'close-todo': !item.status}">
+		<div class="col-title">{{item.title}}</div>
+		<div class="col-descr">{{item.description}}</div>
+		<div class="col-user">Исполнитель: 
+			<span ng-hide="item.changeMode">{{item.userId ? item.user.name : 'Не указан'}}&nbsp;/&nbsp;<span class="change-action" ng-click="tc.toggleUserUpdateState(item)">Изменить</span></span> 
+			<select ng-if="item.changeMode" placeholder="Выбрать исполнителя" ng-model="item.userId">
+		        <option value="">Без исполнителя</option>
+		        <option ng-repeat="itemUser in tc.users" value="{{itemUser._id}}" >{{itemUser.name}}</option>
+		    </select>
+			<button ng-if="item.changeMode" class="btn btn-success" ng-click="tc.saveUserUpdateState(item)">OK</button>
+		</div>
+		<div class="col-actions">
+			<button class="btn btn-success" ng-click="tc.toggleStatus(item)">{{item.status ? 'Выполнить' : 'Открыть'}}</button>
+			<button class="btn btn-danger glyphicon glyphicon-remove pull-right" ng-click="tc.deleteTodo(item)"></button>
+			<button class="btn btn-default glyphicon glyphicon-edit pull-right" ng-click="tc.goToUpdate(item)"></button>
+		</div>
+	</div>
+</div>
+
+<ul class="pagination">
+  <li ng-repeat="i in tc.pagination.range track by $index"><span ng-click="tc.paginationTodo(i)">{{i}}</span></li>
+</ul>

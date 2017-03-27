@@ -1,0 +1,20 @@
+<div class="panel panel-default" style="padding:10px; margin-top:25px;">
+    <h2>Список пользователей ({{usersListForStatistic.length}})</h2>
+    <div class="panel panel-default"  >
+      <table class="table table-hover ">
+          <thead ng-if="usersListForStatistic.length">
+             <tr>
+                <th>Имя пользователя</th>
+                <th>Решено задач</th>
+              </tr>
+           </thead>
+           <tbody>
+               <tr ng-repeat="task in usersListForStatistic">
+                   <td>{{task._id}}</td>
+                   <td>{{task.number}}</td>
+               </tr>
+           </tbody>
+       </table>
+
+    </div>
+    </div>

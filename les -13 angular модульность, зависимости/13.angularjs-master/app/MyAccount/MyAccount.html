@@ -1,0 +1,64 @@
+<style>
+    .ng-dirty.ng-invalid {
+        border-color: #FA787E;
+    }
+
+    .ng-dirty.ng-valid {
+        border-color: #78FA89;
+    }
+
+</style>
+
+<div ng-if="vm.accountService.getInfo()">
+    <h4>Личная информация</h4>
+
+    <p>Имя: {{vm.accountService.getInfo().name}}</p>
+    <p>Email: {{vm.accountService.getInfo().email}}</p>
+    <p>Телефон: {{vm.accountService.getInfo().phone ? vm.accountService.getInfo().phone : 'Не указан'}}</p>
+
+    <button type="submit" class="btn btn-default" data-ng-click="vm.logout()"> Выйти
+    </button>
+
+</div>
+
+<form name="vm.myAccountForm" novalidate ng-if="!vm.accountService.getInfo()">
+    <div class="form-group">
+        <label>Имя</label>
+        <input class="form-control" data-ng-model="account.name" type="text" placeholder="Имя" required ng-minlength="3" name="accountName">
+    </div>
+
+    <div ng-messages="vm.myAccountForm.accountName.$error" ng-if="vm.myAccountForm.accountName.$dirty">
+
+        <div ng-message="required" class="alert alert-danger" role="alert">А где имя?</div>
+        <div ng-message="minlength" class="alert alert-danger" role="alert">Минимум 3 символа</div>
+
+    </div>
+
+    <div class="form-group">
+        <label>Email</label>
+        <input class="form-control" data-ng-model="account.email" type="email" placeholder="Email" required name="accountEmail">
+    </div>
+
+    <div ng-messages="vm.myAccountForm.accountEmail.$error" ng-if="vm.myAccountForm.accountEmail.$dirty">
+
+        <div ng-message="required" class="alert alert-danger" role="alert">А где Email?</div>
+        <div ng-message="email" class="alert alert-danger" role="alert">Введите правильный email адрес</div>
+
+    </div>
+
+    <div class="form-group">
+        <label>Телефон</label>
+        <input class="form-control" data-ng-model="account.phone" type="text" placeholder="Телефон" ng-minlength="10" data-ng-pattern="/^[\+\d]\d+$/" name="accountPhone">
+    </div>
+
+    <div ng-messages="vm.myAccountForm.accountPhone.$error" ng-if="vm.myAccountForm.accountPhone.$dirty">
+
+        <div ng-message="pattern" class="alert alert-danger">Телефон должен быть вида +1234567891 или 12345678910</div>
+        <div ng-message="minlength" class="alert alert-danger">Минимум 10 символов</div>
+
+    </div>
+
+    <button type="submit" class="btn btn-default" data-ng-click="vm.addInfo(account)" data-ng-disabled="vm.myAccountForm.$invalid">Добавить
+    </button>
+
+</form>

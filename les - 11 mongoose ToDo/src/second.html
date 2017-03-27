@@ -1,0 +1,58 @@
+  <h1>Добавление нового пользователя</h1>
+
+  <div class="well">
+    <div class="input-group">
+      <div class="input-group-addon">
+        <i class="glyphicon  glyphicon-user"></i>
+      </div>
+      <input type="text" class="form-control" placeholder="Имя пользователя" ng-model="newUser" >
+    </div>
+    <button style="margin-top: 10px" class="btn btn-primary btn btn-block" ng-click="addUser(newUser)" > <i class="glyphicon  glyphicon-plus"></i>&nbsp;  Добавить</button>
+  </div>
+
+
+
+  <div class="panel panel-default" style="padding:10px; margin-top:25px;">
+    <h2>Список пользователей ({{usersList.length}})</h2>
+
+    <table class="table table-hover ">
+     <thead ng-if="usersList.length">
+         <tr>
+             <th>Имя пользователя</th>
+
+         </tr>
+     </thead>
+     <tbody>
+         <tr ng-repeat="user in usersList">
+             <td>{{user.name}}</td>
+             <td><a style="margin-left: 10px; margin-right: 10px;" ng-click="deleteUser(user)" class="pull-right"><i class="glyphicon glyphicon-trash"></i></a>
+            <a ng-click="setModalParams(user)" class="pull-right"><i data-toggle="modal" data-target="#myModal" class="glyphicon glyphicon-edit"></i></a> </td>
+         </tr>
+     </tbody>
+ </table>
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Введи новое имя</h4>
+      </div>
+      <div class="modal-body">
+       <input type="text" class="form-control" placeholder="Имя пользователя" ng-model="newName" >
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-primary" ng-click="editUser(newName, idForEdit)" data-dismiss="modal" >Сохранить изменения</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+ </div>
+
+
+

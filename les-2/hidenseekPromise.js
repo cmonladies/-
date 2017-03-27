@@ -91,8 +91,8 @@ var createHeadFolderPromise = function (path) {
 };
 
 
-//const hide = (path,pokemonList,callback) => {
-  const hide = (path,pokemonList) => {
+const hide = (path,pokemonList,callback) => {
+//  const hide = (path,pokemonList) => {
 
   let poksForHide = getRandomListOfPoks(pokemonList);
   let linkFolderPokemon = getLinkFolderPokemon(poksForHide);
@@ -100,54 +100,63 @@ var createHeadFolderPromise = function (path) {
 
   createHeadFolderPromise(path)
   .then(() => createSecretFilesPromise(pathesArray,linkFolderPokemon, path))
-  .then(() => {console.log(hiddenPokListForReturn)})
-  .then(() => {console.log('poksforhide',poksForHide.length)})
-  .then(() => {console.log('hiddenPokListForReturn', hiddenPokListForReturn.length)})
-  //.then(() => {return hiddenPokListForReturn})
-  //.then(() => {callback(hiddenPokListForReturn)})
-  .then(() => {console.log('test')})
+  .then(() => {callback(hiddenPokListForReturn)})
   .catch( err => console.log(err));
-/*
-  while (hiddenPokListForReturn.length != poksForHide.length)
-  {
-   1;
-  };
-  */
-  return hiddenPokListForReturn;
+
 };
 
 
 
+let seekPromise = function (path) {
+  return new Promise((resolve, reject) => {
 
+   fs.readdir(path, (err,files) => {
+    if (err) return reject(err);
+    console.log(`Папка ${path} прочита!`);
 
+    promiseArray = files.map(function(dirname) {
+      return seekPromiseReadFiles(dirname,path);
+    });
+    while(promiseArray.length != files.length)
+    {
+      1;
+    }
+    resolve(files, path);
+    });
+  });
+};
 
-
-
-
-
-
-
-
-const seek = (path) => {
-  let conf = { encoding: 'utf8' };
-  let pokList = new PokemonList;
-
-  fs.readdir(path, (err,files) => {
-    if (err) throw err;
-    files.forEach(function(localPath,i,arr) {
-      fs.readdir(path + '/' + localPath, (err,files) => {
-        if (err) throw err;
+let promiseArray = [];
+let seekPromiseReadFiles = function (elem,globalPath) {
+    return new Promise((resolve, reject) => {
+      let conf = { encoding: 'utf8' };
+      fs.readdir(globalPath + '/' + elem, (err,files) => {
+        if (err) return reject(err);
         if (files.length > 0) {
-          fs.readFile(path + '/' + localPath + '/' + files[0], conf, (err, data) => {
-          if (err) throw err;
-          let pokemon = data.split('|');
-          pokList.add(pokemon[0],pokemon[1]);
-          console.log(pokList);
+          fs.readFile(globalPath + '/' + elem + '/' + files[0], conf, (err, data) => {
+            if (err) return reject(err);
+            let pokemon = data.split('|');
+            pokList.add(pokemon[0],pokemon[1]);
+            console.log(pokList);
+            resolve();
           });
         };
       });
-    });
-  });
+      resolve();
+  })
+};
+
+
+let pokList = new PokemonList;
+const seek = (path) => {
+  const globalPath = path;
+
+    seekPromise(globalPath)
+    .then (() => {console.log(promiseArray); })
+    .then( (files,globalPath) => {
+      return Promise.all(promiseArray)})
+    .then(console.log('21',pokList))
+    .catch( err => console.log(err));
 };
 
 

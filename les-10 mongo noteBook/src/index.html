@@ -157,8 +157,8 @@ app.controller("ctrl", function ($scope, $http) {
       </p>
 
       <ul class="nav nav-pills nav-justified">
-        <li role="presentation" ng-click="contPill=true; findPill=false; searchFlag=false;"><a href="#">Добавление контакта</a></li>
-        <li role="presentation" ng-click="findPill=true; contPill=false;"><a href="#">Поиск контакта</a></li>
+        <li role="presentation" ng-click="contPill=true; findPill=false; searchFlag=false; updaterFlag = false;"><a href="#">Добавление контакта</a></li>
+        <li role="presentation" ng-click="findPill=true; contPill=false; updaterFlag = false;"><a href="#">Поиск контакта</a></li>
       </ul>
       <div class="well" >
         <div ng-if="contPill">
