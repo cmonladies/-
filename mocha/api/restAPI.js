@@ -3,8 +3,6 @@ const app       = express();
 const bodyParser = require("body-parser");
 let usersList = require('./users.json');
 
-console.log(usersList);
-
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({"extended": true}));
@@ -60,8 +58,11 @@ apiCRUD.delete('/users/:id', function (req, res){
     return user.id === Number(req.params.id)
   });
 
-  usersList.splice(usersList.indexOf(findUser),1);
-  res.send(usersList);
+  if (findUser){
+    usersList.splice(usersList.indexOf(findUser),1);
+    res.send('user deleted');
+  }
+  else res.status(282).send('user not found');
 });
 
 
