@@ -1,23 +1,7 @@
 const express   = require("express");
 const app       = express();
 const bodyParser = require("body-parser");
-let users = require('./users.json');
-
-let indexUser = 0;
-class User {
-  constructor(name, score) {
-    this.name = name;
-    this.score = score;
-    indexUser++;
-    this.id = indexUser;
-  }
-};
-
-let usersList = [];
-users.forEach(function (user,i,arr) {
-  usersList.push(new User(user.name, user.score));
-});
-
+let usersList = require('./users.json');
 
 
 app.use(bodyParser.json());
@@ -36,9 +20,12 @@ apiCRUD.get('/users', function(req, res) {
 
 apiCRUD.post("/users/", function(req, res) {
   console.log('POST: /users');
-  let user = new User (req.body.name, req.body.score);
+  let user = {
+    id: usersList.length +1,
+    name: req.body.name,
+    score: req.body.score
+  };
   usersList.push(user);
-  console.log(usersList);
   res.send(user);
 });
 
@@ -78,51 +65,58 @@ apiCRUD.delete('/users/:id', function (req, res){
 
 
 // ===================== RPC ========================
+
+
 const RPC = {
 
-  GET: (params, callback) => {
-    console.log(`RPC => GET: /users/:id = ${params.id}`);
+  GET: (data, callback) => {
+    console.log(`RPC => GET: /users/:id = ${data.id}`);
     let findUser = usersList.find(function (user) {
-    return user.id === Number(params.id)
+    return user.id === Number(data.id)
   });
 
     callback(null, findUser);
   },
 
 
-  ADD: (params, callback) => {
-    console.log(`RPC => ADD: /users/:id = ${params.id}`);
-    let user = new User (params.name, params.score);
+  ADD: (data, callback) => {
+    console.log(`RPC => ADD: /users/`);
+
+    let user = {
+      id: data.id,
+      name: data.params.name,
+      score: data.params.score
+    };
     usersList.push(user);
 
     callback(null, user)
   },
 
 
-  UPDATE: (params, callback) => {
-    console.log(`RPC => UPDATE: /users/:id = ${params.id}`);
+  UPDATE: (data, callback) => {
+    console.log(`RPC => UPDATE: /users/:id = ${data.id}`);
     let findUser = usersList.find(function (user) {
-      return user.id === Number(params.id)
+      return user.id === Number(data.id)
     });
 
-    for (property in params) {
+    for (property in data.params) {
       if (property != 'id')
-        findUser[property] = params[property];
+        findUser[property] = data.params[property];
     };
 
   callback(null, findUser)
   },
 
 
-  DELETE: (params, callback) => {
-    console.log(`RPC => DELETE: /users/:id = ${params.id}`);
+  DELETE: (data, callback) => {
+    console.log(`RPC => DELETE: /users/:id = ${data.id}`);
     let findUser = usersList.find(function (user) {
-      return user.id === Number(params.id)
+      return user.id === Number(data.id)
     });
 
     usersList.splice(usersList.indexOf(findUser),1);
 
-    callback(null, usersList);
+    callback(null, 'user deleted');
   }
 };
 
@@ -131,12 +125,21 @@ const RPC = {
 
 
 
-apiCRUDRPC.post("/users", (req, res) => {
+apiCRUDRPC.post("/RPC", (req, res) => {
   const method = RPC[req.body.method];
-  method(req.body.params, function(error, result) {
-  res.json(result);
+  method(req.body, function(error, result) {
+
+    let resultRPC = {
+      jsonrpc: req.body.jsonrpc,
+      id: req.body.id,
+      result: result
+    };
+
+    res.json(resultRPC);
   });
 });
+
+
 
 
 app.use(function(err, req, res, next) {
@@ -147,8 +150,9 @@ app.use(function(err, req, res, next) {
 
 
 app.use('/apiCRUD', apiCRUD);
-app.use('/apiCRUD/RPC', apiCRUDRPC);
+app.use('/apiCRUD', apiCRUDRPC);
 
 app.listen(1335, () => {
   console.log('Server started');
 });
+
