@@ -72,10 +72,12 @@ const RPC = {
   GET: (data, callback) => {
     console.log(`RPC => GET: /users/:id = ${data.id}`);
     let findUser = usersList.find(function (user) {
-    return user.id === Number(data.id)
-  });
+      return user.id === Number(data.id)
+    });
 
-    callback(null, findUser);
+    if(findUser)
+      callback(null, findUser);
+    else callback({code: 404, message: `user ${data.id} not found`});
   },
 
 
@@ -99,12 +101,14 @@ const RPC = {
       return user.id === Number(data.id)
     });
 
-    for (property in data.params) {
-      if (property != 'id')
-        findUser[property] = data.params[property];
-    };
-
-  callback(null, findUser)
+    if (findUser) {
+      for (property in data.params) {
+        if (property != 'id')
+          findUser[property] = data.params[property];
+      };
+    callback(null, findUser);
+    }
+    else callback({code: 404, message: `user ${data.id} not found`});
   },
 
 
@@ -114,10 +118,13 @@ const RPC = {
       return user.id === Number(data.id)
     });
 
-    usersList.splice(usersList.indexOf(findUser),1);
-
-    callback(null, 'user deleted');
+    if (findUser) {
+      usersList.splice(usersList.indexOf(findUser),1);
+      callback(null, 'user deleted');
+    }
+    else callback({code: 404, message: `user ${data.id} not found`});
   }
+
 };
 
 
@@ -134,6 +141,11 @@ apiCRUDRPC.post("/RPC", (req, res) => {
       id: req.body.id,
       result: result
     };
+
+    if (error) {
+      resultRPC.error = error;
+      resultRPC.result = null;
+    }
 
     res.json(resultRPC);
   });
